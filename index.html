@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pentabytes — All-in-one AI Tool</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              900: '#0b0f19',
+              800: '#111827',
+              700: '#1f2937',
+              600: '#374151',
+            },
+            accent: {
+              DEFAULT: '#6366f1',
+              hover: '#818cf8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+    .message-user { background: #6366f1; }
+    .message-ai { background: #1f2937; }
+    #chat-container { scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="bg-dark-900 text-gray-100 h-screen flex overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="w-64 bg-dark-800 border-r border-dark-600 flex flex-col transition-all duration-300">
+    <!-- Logo -->
+    <div class="p-5 border-b border-dark-600 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-accent flex items-center justify-center font-bold text-lg">P</div>
+      <div>
+        <h1 class="font-semibold text-lg leading-tight">Pentabytes</h1>
+        <p class="text-xs text-gray-400">All-in-one AI Tool</p>
+      </div>
+    </div>
+
+    <!-- New Chat -->
+    <div class="p-3">
+      <button id="new-chat-btn" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg bg-accent hover:bg-accent-hover transition text-sm font-medium">
+        <i class="fa-solid fa-plus"></i> New Chat
+      </button>
+    </div>
+
+    <!-- Modes -->
+    <div class="px-3 mb-2">
+      <p class="text-xs text-gray-500 uppercase tracking-wider px-2 mb-2">Modes</p>
+      <div class="space-y-1" id="mode-buttons">
+        <button data-mode="code" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition active-mode">
+          <i class="fa-solid fa-code w-5"></i> Code
+        </button>
+        <button data-mode="study" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
+          <i class="fa-solid fa-graduation-cap w-5"></i> Study
+        </button>
+        <button data-mode="content" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
+          <i class="fa-solid fa-pen-nib w-5"></i> Content
+        </button>
+        <button data-mode="research" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
+          <i class="fa-solid fa-magnifying-glass w-5"></i> Research
+        </button>
+        <button data-mode="productivity" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
+          <i class="fa-solid fa-bolt w-5"></i> Productivity
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat History -->
+    <div class="flex-1 overflow-y-auto scrollbar-thin px-3">
+      <p class="text-xs text-gray-500 uppercase tracking-wider px-2 mb-2 mt-4">History</p>
+      <div id="chat-history" class="space-y-1"></div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="p-3 border-t border-dark-600 space-y-1">
+      <button id="settings-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
+        <i class="fa-solid fa-gear w-5"></i> Settings
+      </button>
+      <button id="export-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
+        <i class="fa-solid fa-download w-5"></i> Export Chat
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Area -->
+  <main class="flex-1 flex flex-col">
+    <!-- Header -->
+    <header class="h-14 border-b border-dark-600 flex items-center justify-between px-6 bg-dark-800/50">
+      <div class="flex items-center gap-3">
+        <button id="toggle-sidebar" class="lg:hidden text-gray-400 hover:text-white">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <span id="current-mode-label" class="font-medium">Code Mode</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-gray-400">
+        <span id="api-status" class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-red-500"></span> API Key Missing
+        </span>
+      </div>
+    </header>
+
+    <!-- Chat Messages -->
+    <div id="chat-container" class="flex-1 overflow-y-auto scrollbar-thin p-6 space-y-6">
+      <!-- Welcome Message -->
+      <div id="welcome" class="flex flex-col items-center justify-center h-full text-center max-w-lg mx-auto">
+        <div class="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-5">
+          <i class="fa-solid fa-brain text-3xl text-accent"></i>
+        </div>
+        <h2 class="text-2xl font-semibold mb-2">Welcome to Pentabytes</h2>
+        <p class="text-gray-400 mb-6">Your all-in-one AI assistant for Code, Study, Content, Research & Productivity.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-sm">
+          <button class="suggestion-btn px-4 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 transition text-left">Explain this code snippet...</button>
+          <button class="suggestion-btn px-4 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 transition text-left">Summarize this topic for study</button>
+          <button class="suggestion-btn px-4 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 transition text-left">Write a LinkedIn post about...</button>
+          <button class="suggestion-btn px-4 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 transition text-left">Break down my goals for today</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="border-t border-dark-600 p-4 bg-dark-800/50">
+      <div class="max-w-3xl mx-auto">
+        <div class="relative flex items-end gap-2 bg-dark-700 rounded-2xl border border-dark-600 focus-within:border-accent transition">
+          <button id="image-btn" class="p-3 text-gray-400 hover:text-white transition" title="Upload image">
+            <i class="fa-solid fa-image"></i>
+          </button>
+          <textarea id="user-input" rows="1" placeholder="Ask anything..." class="flex-1 bg-transparent border-none outline-none resize-none py-3 text-sm max-h-40 scrollbar-thin" style="min-height: 24px;"></textarea>
+          <button id="voice-btn" class="p-3 text-gray-400 hover:text-white transition" title="Voice input">
+            <i class="fa-solid fa-microphone"></i>
+          </button>
+          <button id="send-btn" class="m-1.5 w-10 h-10 rounded-xl bg-accent hover:bg-accent-hover flex items-center justify-center transition disabled:opacity-40" disabled>
+            <i class="fa-solid fa-arrow-up"></i>
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 text-center mt-2">Pentabytes can make mistakes. Verify important information.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+    <div class="bg-dark-800 rounded-2xl w-full max-w-md p-6 border border-dark-600 shadow-2xl">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-lg font-semibold">Settings</h3>
+        <button id="close-settings" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm text-gray-400 mb-1.5">AI Provider</label>
+          <select id="provider-select" class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-accent">
+            <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
+            <option value="gemini">Google Gemini</option>
+            <option value="groq">Groq (Llama / Mixtral)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-400 mb-1.5">API Key</label>
+          <input id="api-key-input" type="password" placeholder="sk-... or AIza..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-accent" />
+          <p class="text-xs text-gray-500 mt-1.5">Your key is stored only in your browser (localStorage).</p>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-400 mb-1.5">Model (optional)</label>
+          <input id="model-input" type="text" placeholder="Leave empty for default" class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-accent" />
+        </div>
+      </div>
+
+      <button id="save-settings" class="w-full mt-6 py-2.5 rounded-lg bg-accent hover:bg-accent-hover font-medium transition">Save Settings</button>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
