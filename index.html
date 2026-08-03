@@ -1,190 +1,318 @@
+# `index.html` v2
+
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pentabytes — All-in-one AI Tool</title>
+  <meta name="theme-color" content="#000000" />
+  <title>Pentabytes — AI Workspace</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            dark: {
-              900: '#0b0f19',
-              800: '#111827',
-              700: '#1f2937',
-              600: '#374151',
-            },
-            accent: {
-              DEFAULT: '#6366f1',
-              hover: '#818cf8',
+            ink: {
+              950: '#000000',
+              900: '#060606',
+              850: '#0b0b0b',
+              800: '#111111',
+              700: '#1a1a1a',
+              600: '#2b2b2b',
+              500: '#4b4b4b',
+              400: '#6f6f6f'
             }
+          },
+          boxShadow: {
+            soft: '0 10px 30px rgba(0,0,0,.35)'
           }
         }
       }
     }
   </script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
-    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-    .scrollbar-thin::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-    .message-user { background: #6366f1; }
-    .message-ai { background: #1f2937; }
-    #chat-container { scroll-behavior: smooth; }
+    :root {
+      color-scheme: dark;
+    }
+
+    html, body {
+      height: 100%;
+      background: #000;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 28px 28px;
+      background-position: center center;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #2b2b2b;
+      border-radius: 999px;
+    }
+
+    .surface {
+      background: rgba(10, 10, 10, 0.88);
+      backdrop-filter: blur(18px);
+    }
+
+    .glass-border {
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .mono-btn {
+      background: #0f0f0f;
+      border: 1px solid rgba(255,255,255,.10);
+      transition: all .2s ease;
+    }
+    .mono-btn:hover {
+      border-color: rgba(255,255,255,.20);
+      transform: translateY(-1px);
+    }
+
+    .message-user {
+      background: linear-gradient(180deg, #ffffff, #d9d9d9);
+      color: #000;
+    }
+
+    .message-ai {
+      background: #111111;
+      border: 1px solid rgba(255,255,255,.08);
+      color: #f5f5f5;
+    }
+
+    #chat-container {
+      scroll-behavior: smooth;
+    }
+
+    .hero-ring {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.10),
+        0 0 0 14px rgba(255,255,255,.02);
+    }
+
+    .logo-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #fff;
+      color: #000;
+      font-weight: 800;
+      letter-spacing: -0.08em;
+      box-shadow: 0 10px 30px rgba(255,255,255,.08);
+    }
+
+    .active-tab {
+      background: #fff !important;
+      color: #000 !important;
+    }
+
+    .chip {
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
   </style>
+
 </head>
-<body class="bg-dark-900 text-gray-100 h-screen flex overflow-hidden">
+<body class="bg-black text-zinc-100">
 
-  <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 bg-dark-800 border-r border-dark-600 flex flex-col transition-all duration-300">
-    <!-- Logo -->
-    <div class="p-5 border-b border-dark-600 flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-accent flex items-center justify-center font-bold text-lg">P</div>
-      <div>
-        <h1 class="font-semibold text-lg leading-tight">Pentabytes</h1>
-        <p class="text-xs text-gray-400">All-in-one AI Tool</p>
-      </div>
-    </div>
-
-    <!-- New Chat -->
-    <div class="p-3">
-      <button id="new-chat-btn" class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg bg-accent hover:bg-accent-hover transition text-sm font-medium">
-        <i class="fa-solid fa-plus"></i> New Chat
-      </button>
-    </div>
-
-    <!-- Modes -->
-    <div class="px-3 mb-2">
-      <p class="text-xs text-gray-500 uppercase tracking-wider px-2 mb-2">Modes</p>
-      <div class="space-y-1" id="mode-buttons">
-        <button data-mode="code" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition active-mode">
-          <i class="fa-solid fa-code w-5"></i> Code
-        </button>
-        <button data-mode="study" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
-          <i class="fa-solid fa-graduation-cap w-5"></i> Study
-        </button>
-        <button data-mode="content" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
-          <i class="fa-solid fa-pen-nib w-5"></i> Content
-        </button>
-        <button data-mode="research" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
-          <i class="fa-solid fa-magnifying-glass w-5"></i> Research
-        </button>
-        <button data-mode="productivity" class="mode-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
-          <i class="fa-solid fa-bolt w-5"></i> Productivity
-        </button>
-      </div>
-    </div>
-
-    <!-- Chat History -->
-    <div class="flex-1 overflow-y-auto scrollbar-thin px-3">
-      <p class="text-xs text-gray-500 uppercase tracking-wider px-2 mb-2 mt-4">History</p>
-      <div id="chat-history" class="space-y-1"></div>
-    </div>
-
-    <!-- Bottom -->
-    <div class="p-3 border-t border-dark-600 space-y-1">
-      <button id="settings-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
-        <i class="fa-solid fa-gear w-5"></i> Settings
-      </button>
-      <button id="export-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-dark-700 transition">
-        <i class="fa-solid fa-download w-5"></i> Export Chat
-      </button>
-    </div>
-  </aside>
-
-  <!-- Main Area -->
-  <main class="flex-1 flex flex-col">
-    <!-- Header -->
-    <header class="h-14 border-b border-dark-600 flex items-center justify-between px-6 bg-dark-800/50">
-      <div class="flex items-center gap-3">
-        <button id="toggle-sidebar" class="lg:hidden text-gray-400 hover:text-white">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-        <span id="current-mode-label" class="font-medium">Code Mode</span>
-      </div>
-      <div class="flex items-center gap-2 text-sm text-gray-400">
-        <span id="api-status" class="flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-red-500"></span> API Key Missing
-        </span>
-      </div>
-    </header>
-
-    <!-- Chat Messages -->
-    <div id="chat-container" class="flex-1 overflow-y-auto scrollbar-thin p-6 space-y-6">
-      <!-- Welcome Message -->
-      <div id="welcome" class="flex flex-col items-center justify-center h-full text-center max-w-lg mx-auto">
-        <div class="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-5">
-          <i class="fa-solid fa-brain text-3xl text-accent"></i>
-        </div>
-        <h2 class="text-2xl font-semibold mb-2">Welcome to Pentabytes</h2>
-        <p class="text-gray-400 mb-6">Your all-in-one AI assistant for Code, Study, Content, Research & Productivity.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-sm">
-          <button class="suggestion-btn px-4 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 transition text-left">Explain this code snippet...</button>
-          <button class="suggestion-btn px-4 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 transition text-left">Summarize this topic for study</button>
-          <button class="suggestion-btn px-4 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 transition text-left">Write a LinkedIn post about...</button>
-          <button class="suggestion-btn px-4 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 transition text-left">Break down my goals for today</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Input Area -->
-    <div class="border-t border-dark-600 p-4 bg-dark-800/50">
-      <div class="max-w-3xl mx-auto">
-        <div class="relative flex items-end gap-2 bg-dark-700 rounded-2xl border border-dark-600 focus-within:border-accent transition">
-          <button id="image-btn" class="p-3 text-gray-400 hover:text-white transition" title="Upload image">
-            <i class="fa-solid fa-image"></i>
-          </button>
-          <textarea id="user-input" rows="1" placeholder="Ask anything..." class="flex-1 bg-transparent border-none outline-none resize-none py-3 text-sm max-h-40 scrollbar-thin" style="min-height: 24px;"></textarea>
-          <button id="voice-btn" class="p-3 text-gray-400 hover:text-white transition" title="Voice input">
-            <i class="fa-solid fa-microphone"></i>
-          </button>
-          <button id="send-btn" class="m-1.5 w-10 h-10 rounded-xl bg-accent hover:bg-accent-hover flex items-center justify-center transition disabled:opacity-40" disabled>
-            <i class="fa-solid fa-arrow-up"></i>
-          </button>
-        </div>
-        <p class="text-xs text-gray-500 text-center mt-2">Pentabytes can make mistakes. Verify important information.</p>
-      </div>
-    </div>
-  </main>
-
-  <!-- Settings Modal -->
-  <div id="settings-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
-    <div class="bg-dark-800 rounded-2xl w-full max-w-md p-6 border border-dark-600 shadow-2xl">
-      <div class="flex items-center justify-between mb-5">
-        <h3 class="text-lg font-semibold">Settings</h3>
-        <button id="close-settings" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <div class="space-y-4">
+  <div class="flex h-screen w-screen">
+    <aside id="sidebar" class="w-80 shrink-0 border-r border-white/10 surface flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center gap-3">
+        <div class="logo-mark">P</div>
         <div>
-          <label class="block text-sm text-gray-400 mb-1.5">AI Provider</label>
-          <select id="provider-select" class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-accent">
-            <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
-            <option value="gemini">Google Gemini</option>
-            <option value="groq">Groq (Llama / Mixtral)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-sm text-gray-400 mb-1.5">API Key</label>
-          <input id="api-key-input" type="password" placeholder="sk-... or AIza..." class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-accent" />
-          <p class="text-xs text-gray-500 mt-1.5">Your key is stored only in your browser (localStorage).</p>
-        </div>
-
-        <div>
-          <label class="block text-sm text-gray-400 mb-1.5">Model (optional)</label>
-          <input id="model-input" type="text" placeholder="Leave empty for default" class="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-accent" />
+          <h1 class="text-lg font-semibold tracking-tight">Pentabytes</h1>
+          <p class="text-xs text-zinc-400">AI Workspace</p>
         </div>
       </div>
 
-      <button id="save-settings" class="w-full mt-6 py-2.5 rounded-lg bg-accent hover:bg-accent-hover font-medium transition">Save Settings</button>
+```
+  <div class="p-4">
+    <button id="new-chat-btn" class="w-full rounded-2xl px-4 py-3 mono-btn text-sm font-medium flex items-center justify-center gap-2">
+      <i class="fa-solid fa-plus"></i>
+      New Chat
+    </button>
+  </div>
+
+  <div class="px-4 pb-3">
+    <div class="grid grid-cols-2 gap-2">
+      <button data-mode="code" class="mode-btn rounded-2xl px-3 py-2 text-sm mono-btn active-tab">Code</button>
+      <button data-mode="study" class="mode-btn rounded-2xl px-3 py-2 text-sm mono-btn">Study</button>
+      <button data-mode="content" class="mode-btn rounded-2xl px-3 py-2 text-sm mono-btn">Content</button>
+      <button data-mode="research" class="mode-btn rounded-2xl px-3 py-2 text-sm mono-btn">Research</button>
     </div>
   </div>
 
+  <div class="px-4 pb-2">
+    <div class="flex items-center justify-between mb-2">
+      <p class="text-xs uppercase tracking-[0.22em] text-zinc-500">History</p>
+      <span class="text-[11px] text-zinc-500" id="api-status">Offline</span>
+    </div>
+  </div>
+
+  <div class="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4">
+    <div id="chat-history" class="space-y-2"></div>
+  </div>
+
+  <div class="p-4 border-t border-white/10 space-y-2">
+    <button id="settings-btn" class="w-full rounded-2xl px-4 py-3 mono-btn text-sm flex items-center gap-2">
+      <i class="fa-solid fa-gear w-4"></i> Settings
+    </button>
+    <button id="export-btn" class="w-full rounded-2xl px-4 py-3 mono-btn text-sm flex items-center gap-2">
+      <i class="fa-solid fa-download w-4"></i> Export Chat
+    </button>
+  </div>
+</aside>
+
+<main class="flex-1 flex flex-col relative grid-bg">
+  <header class="h-16 border-b border-white/10 surface flex items-center justify-between px-5 sm:px-7">
+    <div class="flex items-center gap-3">
+      <button id="toggle-sidebar" class="lg:hidden mono-btn rounded-xl w-10 h-10 grid place-items-center">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div>
+        <p id="current-mode-label" class="text-sm font-semibold">Code Mode</p>
+        <p class="text-xs text-zinc-500">Premium monochrome AI workspace</p>
+      </div>
+    </div>
+    <div class="hidden sm:flex items-center gap-2 text-xs text-zinc-400">
+      <span class="chip rounded-full px-3 py-1">SpaceX-inspired layout</span>
+      <span class="chip rounded-full px-3 py-1">Black / White UI</span>
+    </div>
+  </header>
+
+  <div id="chat-container" class="flex-1 overflow-y-auto scrollbar-thin px-4 sm:px-7 py-6 space-y-5">
+    <div id="welcome" class="max-w-3xl mx-auto h-full min-h-[70vh] flex items-center justify-center">
+      <div class="w-full max-w-2xl">
+        <div class="mx-auto w-20 h-20 rounded-[28px] bg-white text-black grid place-items-center hero-ring">
+          <i class="fa-solid fa-pulse text-3xl"></i>
+        </div>
+        <h2 class="mt-6 text-center text-3xl sm:text-5xl font-semibold tracking-tight">
+          Pentabytes
+        </h2>
+        <p class="mt-4 text-center text-zinc-400 max-w-xl mx-auto text-sm sm:text-base leading-6">
+          A clean AI workspace designed for creators, developers, and builders.
+        </p>
+
+        <div class="mt-8 grid sm:grid-cols-2 gap-3">
+          <button class="suggestion-btn rounded-2xl p-4 text-left mono-btn">
+            Explain this code clearly
+          </button>
+          <button class="suggestion-btn rounded-2xl p-4 text-left mono-btn">
+            Summarize a topic simply
+          </button>
+          <button class="suggestion-btn rounded-2xl p-4 text-left mono-btn">
+            Write a polished post
+          </button>
+          <button class="suggestion-btn rounded-2xl p-4 text-left mono-btn">
+            Plan my next steps
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10 surface p-4 sm:p-5">
+    <div class="max-w-4xl mx-auto">
+      <div class="rounded-[28px] border border-white/10 bg-black shadow-soft p-2 sm:p-3 flex items-end gap-2">
+        <button id="image-btn" class="w-11 h-11 rounded-2xl mono-btn grid place-items-center text-zinc-300 shrink-0" title="Upload image">
+          <i class="fa-regular fa-image"></i>
+        </button>
+
+        <textarea id="user-input" rows="1" placeholder="Ask anything..." class="flex-1 bg-transparent outline-none resize-none px-2 py-3 text-sm leading-6 max-h-40 scrollbar-thin"></textarea>
+
+        <button id="voice-btn" class="w-11 h-11 rounded-2xl mono-btn grid place-items-center text-zinc-300 shrink-0" title="Voice input">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+
+        <button id="send-btn" class="w-11 h-11 rounded-2xl bg-white text-black grid place-items-center shrink-0 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+          <i class="fa-solid fa-arrow-up"></i>
+        </button>
+      </div>
+
+      <div class="mt-3 flex items-center justify-between text-xs text-zinc-500 px-2">
+        <span>Pentabytes may make mistakes. Check important answers.</span>
+        <span id="mode-badge" class="hidden sm:inline-flex chip rounded-full px-3 py-1">Secure local UI</span>
+      </div>
+    </div>
+  </div>
+</main>
+```
+
+  </div>
+
+  <div id="settings-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4">
+    <div class="w-full max-w-lg rounded-[28px] border border-white/10 surface shadow-soft">
+      <div class="flex items-center justify-between border-b border-white/10 p-5">
+        <div>
+          <h3 class="text-lg font-semibold">Settings</h3>
+          <p class="text-xs text-zinc-500">Advanced controls</p>
+        </div>
+        <button id="close-settings" class="w-10 h-10 rounded-xl mono-btn grid place-items-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+```
+  <div class="p-5 space-y-4">
+    <div>
+      <label class="block text-sm text-zinc-300 mb-2">AI Provider</label>
+      <select id="provider-select" class="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm outline-none">
+        <option value="openai">OpenAI</option>
+        <option value="groq">Groq</option>
+        <option value="gemini">Gemini</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm text-zinc-300 mb-2">API Key</label>
+      <input id="api-key-input" type="password" placeholder="Paste your API key" class="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm outline-none" />
+      <p class="mt-2 text-xs text-zinc-500">Stored only in your browser.</p>
+    </div>
+
+    <div>
+      <label class="block text-sm text-zinc-300 mb-2">Model</label>
+      <input id="model-input" type="text" placeholder="Optional model name" class="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm outline-none" />
+    </div>
+  </div>
+
+  <div class="p-5 border-t border-white/10">
+    <button id="save-settings" class="w-full rounded-2xl bg-white text-black px-4 py-3 text-sm font-semibold">
+      Save Settings
+    </button>
+  </div>
+</div>
+```
+
+  </div>
+
   <script src="js/app.js"></script>
+
 </body>
 </html>
